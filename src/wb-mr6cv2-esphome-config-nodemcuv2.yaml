@@ -1,0 +1,231 @@
+# Константы для удобства настроек.
+substitutions:
+  name: wb-mr6cv2
+  friendly_name: wb-mr6c-v2
+  tx_gpio: GPIO1
+  rx_gpio: GPIO3
+  flow_gpio: GPIO0
+  prefix: "esphome/${name}"
+  ota_password: "ваш_пароль"
+  wifi_ssid: "WB-LAB"
+  wifi_password: "ваш_пароль"
+  fallback_password: "ваш_пароль"
+
+# Описание платы
+esphome:
+  name: ${name}
+  platform: ESP8266
+  board: nodemcuv2
+
+logger:
+  level: DEBUG
+  baud_rate: 0
+
+# Отключаем сторожевой таймер, чтобы контроллер
+# реле не перезапускадся каждые 15 минут из-за того,
+# что нет подключений по API
+api:
+  reboot_timeout: 0s
+
+# Чтобы обновлять прошивку по воздуху.
+ota:
+  password: "${ota_password}"
+
+# Подключение к Wi-Fi
+wifi:
+  ssid: "${wifi_ssid}"
+  password: "${wifi_password}"
+  ap:
+    ssid: Fallback ${name}
+    password: "${fallback_password}"
+
+# Если не получится подключиться к Wi-Fi,
+# то поднять свой веб-интерфейс с логином
+# и паролем указанным выше в разделе «ap:».
+captive_portal:
+
+# Подключение к MQTT
+mqtt:
+  broker: wirenboard-ascmdm6q.local
+  port: 1883
+  username: ''
+  password: ''
+  discovery: false
+  id: mqtt_client
+  topic_prefix: "${prefix}"
+# Сообщения с текущим статусом устройства
+  birth_message:
+      topic: "${prefix}/text_sensor/status/state"
+      payload: online
+
+  will_message:
+      topic: "${prefix}/text_sensor/status/state"
+      payload: offline
+
+  shutdown_message :
+      topic: "${prefix}/text_sensor/status/state"
+      payload: shutdown
+
+uart:
+  id: mod_bus
+  tx_pin: $tx_gpio
+  rx_pin: $rx_gpio
+  baud_rate: 115200
+  stop_bits: 2
+
+modbus:
+  flow_control_pin: $flow_gpio
+  send_wait_time: 50ms
+  id: modbus1
+
+modbus_controller:
+  - id: mbus
+    ## the Modbus device addr
+    address: 226
+    modbus_id: modbus1
+    setup_priority: 10
+    update_interval: 800ms
+    command_throttle: 100ms
+
+switch:
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: k1
+    name: "K1"
+    register_type: coil
+    address: 0
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: k2
+    name: "K2"
+    register_type: coil
+    address: 1
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: k3
+    name: "K3"
+    register_type: coil
+    address: 2
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: k4
+    name: "K4"
+    register_type: coil
+    address: 3
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: k5
+    name: "K5"
+    register_type: coil
+    address: 4
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: k6
+    name: "K6"
+    register_type: coil
+    address: 5
+
+binary_sensor:
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: input1
+    name: "Input 1"
+    register_type: discrete_input
+    address: 0
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: input2
+    name: "Input 2"
+    register_type: discrete_input
+    address: 1
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: input3
+    name: "Input 3"
+    register_type: discrete_input
+    address: 2
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: input4
+    name: "Input 4"
+    register_type: discrete_input
+    address: 3
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: input5
+    name: "Input 5"
+    register_type: discrete_input
+    address: 4
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: input6
+    name: "Input 6"
+    register_type: discrete_input
+    address: 5
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: input0
+    name: "Input 0"
+    register_type: discrete_input
+    address: 7
+
+sensor:
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: inputcount1
+    name: "Input 1 Counter"
+    register_type: read
+    address: 32
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: inputcount2
+    name: "Input 2 Counter"
+    register_type: read
+    address: 33
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: inputcount3
+    name: "Input 3 Counter"
+    register_type: read
+    address: 34
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: inputcount4
+    name: "Input 4 Counter"
+    register_type: read
+    address: 35
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: inputcount5
+    name: "Input 5 Counter"
+    register_type: read
+    address: 36
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: inputcount6
+    name: "Input 6 Counter"
+    register_type: read
+    address: 37
+
+  - platform: modbus_controller
+    modbus_controller_id: mbus
+    id: inputcount0
+    name: "Input 0 Counter"
+    register_type: read
+    address: 39
